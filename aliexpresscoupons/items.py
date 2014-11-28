@@ -16,3 +16,6 @@ class AliexpressItem(scrapy.Item):
     couponPriceText = scrapy.Field()
     couponOrderPrice = scrapy.Field()
     couponOrderPriceText = scrapy.Field()
+    storeName = scrapy.Field()
+    couponTime = scrapy.Field()
+    couponTimeText = scrapy.Field()

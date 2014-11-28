@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import scrapy
 from aliexpresscoupons.items import AliexpressItem
+import datetime
 
 
 class CouponsSpider(scrapy.Spider):
@@ -14,10 +15,16 @@ class CouponsSpider(scrapy.Spider):
         for li in response.xpath('//ul[@class="coupon-list clearfix"]/li'):
             item = AliexpressItem()
             item['url'] = li.xpath('a/@href').extract()[0]
+            item['storeName'] = ''.join(li.xpath('a/div/span[@class="store-name"]/descendant-or-self::*/text()').extract())
             item['couponPrice'] = float(li.xpath('a/div/span[@class="coupon-price"]/em/text()').extract()[0].strip().replace('$', ''))
             item['couponPriceText'] = ''.join(li.xpath('a/div/span[@class="coupon-price"]/descendant-or-self::*/text()').extract())
             item['couponOrderPrice'] = float(li.xpath('a/div/span[@class="coupon-order-price"]/em/text()').extract()[0].strip().replace('$', ''))
             item['couponOrderPriceText'] = ''.join(li.xpath('a/div/span[@class="coupon-order-price"]/descendant-or-self::*/text()').extract())
+            dateText = ''.join(li.xpath('a/div/span[@class="coupon-time"]/descendant-or-self::*/text()').extract())
+            _date = dateText.strip().replace('Valid before ', '').strip()
+            _date = datetime.datetime.strptime(_date, '%d %b,%Y')
+            item['couponTimeText'] = dateText
+            item['couponTime'] = _date
             yield item
         page = response.xpath('//a[@class="page-next"]/@page').extract()
         if len(page) == 1:
